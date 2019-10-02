@@ -4,7 +4,6 @@ import io.swagger.codegen.AbstractOptionsTest;
 import io.swagger.codegen.CodegenConfig;
 import io.swagger.codegen.languages.KotlinClientCodegen;
 import io.swagger.codegen.options.KotlinClientCodegenOptionsProvider;
-
 import mockit.Expectations;
 import mockit.Tested;
 
@@ -38,7 +37,10 @@ public class KotlinClientCodegenOptionsTest extends AbstractOptionsTest {
             times = 1;
             codegen.setEnumPropertyNaming(KotlinClientCodegenOptionsProvider.ENUM_PROPERTY_NAMING);
             times = 1;
+            codegen.setLibrary(KotlinClientCodegenOptionsProvider.LIBRARY);
+            times = 1;
             codegen.setDateLibrary(KotlinClientCodegenOptionsProvider.DATE_LIBRARY);
+            times = 1;
         }};
     }
 }

@@ -91,6 +91,10 @@ public class KotlinClientCodegen extends AbstractKotlinCodegen {
             setDateLibrary(additionalProperties.get(DATE_LIBRARY).toString());
         }
 
+        if (additionalProperties.containsKey(CodegenConstants.LIBRARY)) {
+            this.setLibrary((String) additionalProperties.get(CodegenConstants.LIBRARY));
+        }
+
         if (DateLibrary.THREETENBP.value.equals(dateLibrary)) {
             additionalProperties.put(DateLibrary.THREETENBP.value, true);
             typeMapping.put("date", "LocalDate");
