@@ -1,0 +1,58 @@
+{{>licenseInfo}}
+package {{apiPackage}}
+
+{{#imports}}import {{import}}
+{{/imports}}
+
+import retrofit2.*
+import retrofit2.http.*
+{{#threetenbp}}
+import org.threeten.bp.LocalDateTime
+{{/threetenbp}}
+
+{{#operations}}
+interface {{classname}} {
+
+    {{#operation}}
+        /**
+        * {{summary}}
+        * {{notes}}
+        {{#allParams}}
+        * @param {{paramName}} {{description}}{{#required}} (required){{/required}}{{^required}} (optional{{#defaultValue}}, default to {{{.}}}{{/defaultValue}}){{/required}}
+        {{/allParams}}
+        * @return Response&lt;{{#isResponseFile}}ResponseBody{{/isResponseFile}}{{^isResponseFile}}{{#returnType}}{{returnType}}{{/returnType}}{{^returnType}}Unit{{/returnType}}{{/isResponseFile}}&gt;
+        {{#isDeprecated}}
+        * @deprecated
+        {{/isDeprecated}}
+        {{#externalDocs}}
+        * {{description}}
+        * @see <a href="{{url}}">{{summary}} Documentation</a>
+        {{/externalDocs}}
+        */
+        {{#isDeprecated}}
+        @Deprecated
+        {{/isDeprecated}}
+        {{#formParams}}
+            {{#-first}}
+                {{#isMultipart}}@retrofit2.http.Multipart{{/isMultipart}}{{^isMultipart}}@retrofit2.http.FormUrlEncoded{{/isMultipart}}
+            {{/-first}}
+        {{/formParams}}
+        {{^formParams}}
+            {{#prioritizedContentTypes}}
+                {{#-first}}
+                        @Headers({
+                        "Content-Type:{{{mediaType}}}"
+                        })
+                {{/-first}}
+            {{/prioritizedContentTypes}}
+        {{/formParams}}
+        @{{httpMethod}}("{{{path}}}")
+        suspend fun {{operationId}}(
+            {{#allParams}}
+                {{>libraries/retrofit-coroutines/queryParams}}{{>libraries/retrofit-coroutines/pathParams}}{{>libraries/retrofit-coroutines/headerParams}}{{>libraries/retrofit-coroutines/bodyParams}}{{>libraries/retrofit-coroutines/formParams}}{{#hasMore}}, {{/hasMore}}
+            {{/allParams}}
+        ) : Response<{{#isResponseFile}}ResponseBody{{/isResponseFile}}{{^isResponseFile}}{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}Unit{{/returnType}}{{/isResponseFile}}>
+
+    {{/operation}}
+}
+{{/operations}}
