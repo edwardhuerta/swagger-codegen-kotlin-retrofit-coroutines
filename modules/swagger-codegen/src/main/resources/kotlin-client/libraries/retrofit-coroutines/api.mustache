@@ -4,8 +4,12 @@ package {{apiPackage}}
 {{#imports}}import {{import}}
 {{/imports}}
 
-import retrofit2.*
-import retrofit2.http.*
+import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
+
 {{#threetenbp}}
 import org.threeten.bp.LocalDateTime
 {{/threetenbp}}
@@ -46,13 +50,26 @@ interface {{classname}} {
                 {{/-first}}
             {{/prioritizedContentTypes}}
         {{/formParams}}
-        @{{httpMethod}}("{{{path}}}")
+        @retrofit2.http.{{httpMethod}}("{{{path}}}")
         suspend fun {{operationId}}(
             {{#allParams}}
                 {{>libraries/retrofit-coroutines/queryParams}}{{>libraries/retrofit-coroutines/pathParams}}{{>libraries/retrofit-coroutines/headerParams}}{{>libraries/retrofit-coroutines/bodyParams}}{{>libraries/retrofit-coroutines/formParams}}{{#hasMore}}, {{/hasMore}}
             {{/allParams}}
-        ) : Response<{{#isResponseFile}}ResponseBody{{/isResponseFile}}{{^isResponseFile}}{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}Unit{{/returnType}}{{/isResponseFile}}>
+        ) : retrofit2.Response<{{#isResponseFile}}ResponseBody{{/isResponseFile}}{{^isResponseFile}}{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}Unit{{/returnType}}{{/isResponseFile}}>
 
     {{/operation}}
+
+    companion object {
+        fun createClient(baseUrl: String = "{{{basePath}}}") = Retrofit.Builder()
+            .baseUrl(baseUrl)
+            .addConverterFactory(MoshiConverterFactory.create(Moshi.Builder()
+                .add(KotlinJsonAdapterFactory())
+                .add(java.util.Date::class.java, Rfc3339DateJsonAdapter().nullSafe())
+                .build()
+            ))
+            .build()
+            .create({{classname}}::class.java)
+    }
+
 }
 {{/operations}}
